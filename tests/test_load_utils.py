@@ -14,9 +14,9 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-ORDER_ITEMS_PATH_VALID = 'valid_order_items.csv'
-DISTR_CENTERS_PATH_VALID = 'valid_distr_centers.csv'
-PRODUCTS_PATH_VALID = 'valid_products.csv'
+ORDER_ITEMS_PATH_VALID = 'test_data/valid_order_items.csv'
+DISTR_CENTERS_PATH_VALID = 'test_data/valid_distr_centers.csv'
+PRODUCTS_PATH_VALID = 'test_data/valid_products.csv'
 
 
 def test_load_data_valid():
