@@ -13,6 +13,15 @@ import os
 import datetime
 import pandas as pd
 
+import functions.load_utils as ld_utils
+
+# COMMAND ----------
+
+import logging
+
+# Configure logging to display INFO level messages and above
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -29,23 +38,37 @@ selected_distribution_center = 1
 
 # COMMAND ----------
 
-# This dataset contains the target information, product_id ordered by day
-df_order_items = pd.read_csv("data/01-raw/order_items.csv")
-df_order_items.head(3)
+RAW_DATA_DIR = "data/01-raw/"
+ORDER_ITEMS_FILE = "order_items.csv"
+DISTR_CENTERS_FILE = "distribution_centers.csv"
+PRODUCTS_FILE = "products.csv"
+
+ORDER_ITEMS_PATH = RAW_DATA_DIR + ORDER_ITEMS_FILE
+DISTR_CENTERS_PATH = RAW_DATA_DIR + DISTR_CENTERS_FILE
+PRODUCTS_DIR_PATH = RAW_DATA_DIR + PRODUCTS_FILE
 
 # COMMAND ----------
 
-df_distribuition_centers = pd.read_csv("data/01-raw/distribution_centers.csv")
-df_distribuition_centers = df_distribuition_centers.add_prefix('distribution_center_')
-df_distribuition_centers = df_distribuition_centers.rename(columns={'distribution_center_id': 'product_distribution_center_id'})
-df_distribuition_centers.head(3)
+df_order_items = pd.read_csv(ORDER_ITEMS_PATH).head(10)
+df_distribuition_centers = pd.read_csv(DISTR_CENTERS_PATH).head(10)
+df_products = pd.read_csv(PRODUCTS_DIR_PATH).head(10)
 
 # COMMAND ----------
 
-df_products = pd.read_csv("data/01-raw/products.csv")
-df_products = df_products.add_prefix('product_')
-df_products = df_products.merge(df_distribuition_centers, how='left', on='product_distribution_center_id')
-df_products.head()
+df_order_items.to_csv("/Workspace/Users/ana.oliveira@bixtecnologia.com.br/databricks_forecast/tests/test_data/valid_order_items.csv")
+df_distribuition_centers.to_csv("/Workspace/Users/ana.oliveira@bixtecnologia.com.br/databricks_forecast/tests/test_data/valid_distr_centers.csv")
+df_products.to_csv("/Workspace/Users/ana.oliveira@bixtecnologia.com.br/databricks_forecast/tests/test_data/valid_products.csv")
+
+# COMMAND ----------
+
+order_items_path = ORDER_ITEMS_PATH
+distr_centers_path = DISTR_CENTERS_PATH
+products_path = PRODUCTS_DIR_PATH
+
+df_order_items, df_distribuition_centers, df_products = ld_utils.load_data(order_items_path, distr_centers_path, products_path)
+display(df_order_items.head(3))
+display(df_distribuition_centers.head(3))
+display(df_products.head(3))
 
 # COMMAND ----------
 
@@ -54,6 +77,7 @@ df_products.head()
 
 # COMMAND ----------
 
+df_products = df_products.merge(df_distribuition_centers, how='left', on='product_distribution_center_id')
 df_merged = df_order_items.merge(df_products, how='left', on='product_id')
 df_merged.head(3)
 
