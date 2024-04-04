@@ -1,0 +1,24 @@
+name: databricks-cicd
+# This workflow represents a set of basic End-to-End tests
+on: [push, pull_request]
+
+jobs:
+
+  run-databricks-cicd:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - run: python -V
+        - run: 
+            echo "y
+            ${{ secrets.DATABRICKS_HOST }}
+            ${{ secrets.DATABRICKS_TOKEN }}
+            ${{ secrets.DATABRICKS_CLUSTER_ID }}
+            ${{ secrets.DATABRICKS_WORKSPACE_ORG_ID }}
+            15001" databricks-connect configure
+        - run: pytest tests --junitxml=testresults.xml
+        - name: CICD Results
+          uses: EnricoMi/publish-unit-test-result-action@v1
+          if: always()
+          with:
+            files: testresults.xml
